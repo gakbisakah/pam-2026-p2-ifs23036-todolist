@@ -1,7 +1,8 @@
 ktor:
+  deployment:
+    port: ${PORT:8080}
+    host: 0.0.0.0
+
   application:
     modules:
       - com.delcom.ApplicationKt.module
-  deployment:
-    port: ${APP_PORT}
-    host: ${APP_HOST}
