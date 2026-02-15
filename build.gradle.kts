@@ -1,3 +1,5 @@
+import org.gradle.jvm.tasks.Jar
+
 val koin_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
@@ -7,7 +9,6 @@ plugins {
     kotlin("jvm") version "2.3.0"
     id("io.ktor.plugin") version "3.3.2"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.2.21"
-
     application
 }
 
@@ -18,13 +19,41 @@ application {
     mainClass.set("com.delcom.ApplicationKt")
 }
 
+/*
+ 👉 Paksa bikin FAT JAR manual
+ */
+tasks.register<Jar>("fatJar") {
+
+    archiveBaseName.set("app")
+    archiveVersion.set("")
+    archiveClassifier.set("all")
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    manifest {
+        attributes["Main-Class"] = "com.delcom.ApplicationKt"
+    }
+
+    from(sourceSets.main.get().output)
+
+    dependsOn(configurations.runtimeClasspath)
+
+    from({
+        configurations.runtimeClasspath.get()
+            .filter { it.name.endsWith("jar") }
+            .map { zipTree(it) }
+    })
+}
+
+tasks.build {
+    dependsOn("fatJar")
+}
+
 dependencies {
 
-    // Koin
     implementation("io.insert-koin:koin-ktor:$koin_version")
     implementation("io.insert-koin:koin-logger-slf4j:$koin_version")
 
-    // Ktor Server
     implementation("io.ktor:ktor-server-core")
     implementation("io.ktor:ktor-server-netty")
     implementation("io.ktor:ktor-server-content-negotiation")
@@ -34,16 +63,12 @@ dependencies {
     implementation("io.ktor:ktor-server-host-common")
     implementation("io.ktor:ktor-server-status-pages")
 
-    // Client
     implementation("io.ktor:ktor-client-content-negotiation")
 
-    // Logging
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
-    // Env
     implementation("io.github.cdimascio:dotenv-kotlin:$dotenv_version")
 
-    // Test
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }
