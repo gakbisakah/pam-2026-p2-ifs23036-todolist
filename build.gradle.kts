@@ -32,7 +32,7 @@ tasks.register<Jar>("fatJar") {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     manifest {
-        attributes["Main-Class"] = "com.delcom.ApplicationKt")
+        attributes["Main-Class"] = "com.delcom.ApplicationKt"
     }
 
     from(sourceSets.main.get().output)
@@ -45,6 +45,7 @@ tasks.register<Jar>("fatJar") {
             .map { zipTree(it) }
     })
 }
+
 
 tasks.build {
     dependsOn("fatJar")
