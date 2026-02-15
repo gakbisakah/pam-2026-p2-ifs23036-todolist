@@ -8,16 +8,13 @@ plugins {
     id("io.ktor.plugin") version "3.3.2"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.2.21"
 
-    // 👉 TAMBAHAN: Untuk bikin FAT JAR
     application
-    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "com.delcom"
 version = "0.0.1"
 
 application {
-    // 👉 Pastikan sesuai package
     mainClass.set("com.delcom.ApplicationKt")
 }
 
@@ -27,7 +24,7 @@ dependencies {
     implementation("io.insert-koin:koin-ktor:$koin_version")
     implementation("io.insert-koin:koin-logger-slf4j:$koin_version")
 
-    // Ktor
+    // Ktor Server
     implementation("io.ktor:ktor-server-core")
     implementation("io.ktor:ktor-server-netty")
     implementation("io.ktor:ktor-server-content-negotiation")
@@ -49,15 +46,4 @@ dependencies {
     // Test
     testImplementation("io.ktor:ktor-server-test-host")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
-}
-
-/*
- 👉 Konfigurasi ShadowJar
- Biar hasilnya: build/libs/app-all.jar
-*/
-tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
-    archiveBaseName.set("app")
-    archiveClassifier.set("all")
-    archiveVersion.set("")
-    mergeServiceFiles()
 }
